@@ -1,0 +1,22 @@
+name: Build
+
+on: [push, pull_request]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Prepare repository
+        uses: actions/checkout@v3
+      - name: Build document
+        uses: xu-cheng/latex-action@v2
+        with:
+          root_file: main.tex
+          post_compile: "if [[ $(grep -ic overfull *.log) != 0 ]]; then echo 'Margin overrun detected; failing...' && exit 1; fi"
+      - name: Store PDF
+        uses: actions/upload-artifact@v3
+        with:
+          name: Output PDF
+          path: ./*.pdf
